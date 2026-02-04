@@ -15,72 +15,59 @@ HTML_TEMPLATE = '''
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            /* Arka planı tamamen dolgulu siber mavi yapıyoruz */
+            /* Arka plan dolgulu siber mavi */
             background: radial-gradient(circle, #001220 0%, #000a12 100%);
-            color: #bc13fe; /* Yazılar mor */
+            color: #bc13fe; 
             font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        .container {
-            background: rgba(0, 20, 40, 0.8); /* Panelin arkası hafif şeffaf lacivert */
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #00f2ff; /* Kenarlar neon mavi */
-            box-shadow: 0 0 25px #00f2ff, inset 0 0 15px #00f2ff;
-            width: 80%;
-            max-width: 900px;
         }
         h1 {
-            text-align: center;
-            color: #bc13fe; /* Başlık Mor */
-            text-shadow: 0 0 15px #bc13fe, 0 0 30px #bc13fe;
+            color: #00f2ff; /* Başlık Neon Mavi */
+            text-shadow: 0 0 15px #00f2ff;
             letter-spacing: 5px;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
-        .data-card {
-            background: rgba(0, 0, 0, 0.5);
-            border-left: 5px solid #bc13fe; /* Kartların kenarı mor */
-            margin: 15px 0;
+        #data-container {
+            width: 100%;
+            max-width: 1200px; /* Daha geniş alan */
+        }
+        .data-log {
+            /* Eski tarzdaki gibi geniş ve sade ama neon renkli */
+            background: rgba(188, 19, 254, 0.05); 
+            border-bottom: 1px solid rgba(0, 242, 255, 0.3);
             padding: 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
-        }
-        .data-card:hover {
-            transform: scale(1.02);
-            background: rgba(188, 19, 254, 0.1);
+            margin-bottom: 10px;
+            word-wrap: break-word; /* Uzun loglar taşmasın */
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #bc13fe; /* Yazılar Mor */
+            text-shadow: 0 0 5px rgba(188, 19, 254, 0.5);
         }
         .footer {
-            margin-top: 20px;
-            font-size: 0.8rem;
+            margin-top: 50px;
             color: #00f2ff;
-            text-shadow: 0 0 5px #00f2ff;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>KENZZ KANEKI SYSTEM</h1>
-        <div id="data-container">
-            {% if data %}
-                {% for item in data %}
-                    <div class="data-card">
-                        <strong>LOG:</strong> {{ item }}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p style="text-align:center; color:#00f2ff;">Sistem Aktif. Veri bekleniyor...</p>
-            {% endif %}
-        </div>
+    <h1>KENZZ KANEKI SYSTEM</h1>
+    <div id="data-container">
+        {% if data %}
+            {% for item in data %}
+                <div class="data-log">
+                    [SYSTEM_LOG] > {{ item }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:#00f2ff;">Sistem Aktif... Veri bekleniyor...</p>
+        {% endif %}
     </div>
-    <div class="footer">KENZZ KANEKI | DARK WEB ACCESS GRANTED</div>
+    <div class="footer">KENZZ KANEKI | ACCESS GRANTED</div>
 </body>
 </html>
 '''
@@ -99,3 +86,4 @@ def receive_data():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
