@@ -2,7 +2,7 @@ from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
 
-# Kenzz Kaneki System - Siber Üs Veri Deposu
+# Kenzz Kaneki System - Siber Veri Havuzu
 data_store = []
 
 HTML_TEMPLATE = '''
@@ -12,62 +12,64 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KENZZ KANEKI | SIBER PANEL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            /* Arka plan dolgulu siber mavi */
-            background: radial-gradient(circle, #001220 0%, #000a12 100%);
-            color: #bc13fe; 
-            font-family: 'Orbitron', sans-serif;
+            background-color: #000a12; /* Derin Siber Siyah */
+            color: #bc13fe; /* Ana yazılar Mor */
+            font-family: 'Courier Prime', monospace; /* O eski terminal tipi yazı */
             margin: 0;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            line-height: 1.2;
         }
-        h1 {
+        .header {
             color: #00f2ff; /* Başlık Neon Mavi */
-            text-shadow: 0 0 15px #00f2ff;
-            letter-spacing: 5px;
-            margin-bottom: 40px;
+            text-align: center;
+            border-bottom: 1px solid #00f2ff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00f2ff;
         }
-        #data-container {
-            width: 100%;
-            max-width: 1200px; /* Daha geniş alan */
+        .log {
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
-        .data-log {
-            /* Eski tarzdaki gibi geniş ve sade ama neon renkli */
-            background: rgba(188, 19, 254, 0.05); 
-            border-bottom: 1px solid rgba(0, 242, 255, 0.3);
-            padding: 15px;
-            margin-bottom: 10px;
-            word-wrap: break-word; /* Uzun loglar taşmasın */
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #bc13fe; /* Yazılar Mor */
-            text-shadow: 0 0 5px rgba(188, 19, 254, 0.5);
+        .prefix {
+            color: #00f2ff; /* [+] işareti Mavi */
+            font-weight: bold;
+            margin-right: 10px;
         }
-        .footer {
-            margin-top: 50px;
+        .status {
             color: #00f2ff;
-            opacity: 0.7;
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <h1>KENZZ KANEKI SYSTEM</h1>
-    <div id="data-container">
+    <div class="header">
+        === KENZZ KANEKI SYSTEM - SIBER KONTROL MERKEZI ===
+    </div>
+    
+    <div id="log-container">
         {% if data %}
             {% for item in data %}
-                <div class="data-log">
-                    [SYSTEM_LOG] > {{ item }}
+                <div class="log">
+                    <span class="prefix">[+]</span>{{ item }}
                 </div>
             {% endfor %}
         {% else %}
-            <p style="color:#00f2ff;">Sistem Aktif... Veri bekleniyor...</p>
+            <div style="color: #00f2ff; text-align: center;">[!] SISTEM AKTIF - VERI AKISI BEKLENIYOR...</div>
         {% endif %}
     </div>
-    <div class="footer">KENZZ KANEKI | ACCESS GRANTED</div>
+
+    <div class="status">
+        KENZZ KANEKI V14 | CONNECTION: SECURE | THEME: NEON-V2
+    </div>
 </body>
 </html>
 '''
@@ -85,5 +87,4 @@ def receive_data():
     return jsonify({"status": "error"}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-
+    app.run(host='0.0.0
