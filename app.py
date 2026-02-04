@@ -1,109 +1,101 @@
-from flask import Flask, request, jsonify, render_template_string
-import sqlite3, os
+from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
-DB_PATH = "/tmp/data.db" 
 
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute('''CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, user TEXT, report TEXT, date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
-    conn.commit()
-    conn.close()
+# Kenzz Kaneki System - Siber Üs Veri Deposu
+data_store = []
+
+HTML_TEMPLATE = '''
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KENZZ KANEKI | SIBER PANEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            /* Arka planı tamamen dolgulu siber mavi yapıyoruz */
+            background: radial-gradient(circle, #001220 0%, #000a12 100%);
+            color: #bc13fe; /* Yazılar mor */
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            background: rgba(0, 20, 40, 0.8); /* Panelin arkası hafif şeffaf lacivert */
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #00f2ff; /* Kenarlar neon mavi */
+            box-shadow: 0 0 25px #00f2ff, inset 0 0 15px #00f2ff;
+            width: 80%;
+            max-width: 900px;
+        }
+        h1 {
+            text-align: center;
+            color: #bc13fe; /* Başlık Mor */
+            text-shadow: 0 0 15px #bc13fe, 0 0 30px #bc13fe;
+            letter-spacing: 5px;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .data-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 5px solid #bc13fe; /* Kartların kenarı mor */
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
+        }
+        .data-card:hover {
+            transform: scale(1.02);
+            background: rgba(188, 19, 254, 0.1);
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #00f2ff;
+            text-shadow: 0 0 5px #00f2ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KENZZ KANEKI SYSTEM</h1>
+        <div id="data-container">
+            {% if data %}
+                {% for item in data %}
+                    <div class="data-card">
+                        <strong>LOG:</strong> {{ item }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center; color:#00f2ff;">Sistem Aktif. Veri bekleniyor...</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="footer">KENZZ KANEKI | DARK WEB ACCESS GRANTED</div>
+</body>
+</html>
+'''
+
+@app.route('/kenzz-kontrol')
+def control_panel():
+    return render_template_string(HTML_TEMPLATE, data=data_store)
 
 @app.route('/api/data', methods=['POST'])
 def receive_data():
-    data = request.json
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("INSERT INTO logs (ip, user, report) VALUES (?, ?, ?)", (data['ip'], data['user'], data['full_report']))
-    conn.commit()
-    conn.close()
-    return jsonify({"status": "success"}), 200
-
-@app.route('/kenzz-kontrol')
-def view_data():
-    if not os.path.exists(DB_PATH): return "<body style='background:#000;color:#00f2ff;font-family:sans-serif;text-align:center;padding-top:50px;'><h1>Henuz veri yok kanka, gozun yolda olsun...</h1></body>"
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("SELECT ip, user, report, date FROM logs ORDER BY id DESC")
-    rows = cur.fetchall()
-    conn.close()
-    
-    html = """
-    <html><head><title>KENZZ KANEKI V14 - NEON</title>
-    <style>
-        body { 
-            background: #020205; 
-            color: #bc13fe; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 30px;
-        }
-        h1 { 
-            text-align: center; 
-            color: #00f2ff; 
-            text-transform: uppercase;
-            font-size: 3em;
-            letter-spacing: 8px;
-            /* DOLGULU VE PARLAK YAZI EFEKTİ */
-            text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff, 0 0 40px #bc13fe;
-            margin-bottom: 40px;
-        }
-        table { 
-            border-collapse: separate; 
-            border-spacing: 0 10px;
-            width: 100%; 
-            background: transparent;
-        }
-        th { 
-            background: #bc13fe; 
-            color: #fff; 
-            padding: 15px; 
-            text-transform: uppercase;
-            box-shadow: 0 0 15px #bc13fe;
-            border-radius: 5px;
-        }
-        td { 
-            background: rgba(20, 20, 30, 0.8);
-            border: 1px solid #00f2ff;
-            padding: 15px; 
-            color: #fff;
-            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2);
-        }
-        tr:hover td {
-            border-color: #bc13fe;
-            box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
-            transform: scale(1.01);
-            transition: 0.3s;
-        }
-        pre { 
-            white-space: pre-wrap; 
-            color: #00f2ff; 
-            background: #000; 
-            padding: 15px; 
-            border-left: 4px solid #bc13fe;
-            font-size: 14px;
-        }
-        .date { color: #888; font-style: italic; }
-    </style>
-    </head>
-    <body>
-        <h1>Kenzz Kaneki Operations</h1>
-        <table>
-            <tr><th>IP ADRESİ</th><th>HEDEF</th><th>SİSTEM RAPORU</th><th>ZAMAN</th></tr>
-            {% for row in rows %}
-            <tr>
-                <td style="color:#00f2ff; font-weight:bold; font-size:1.2em;">{{row[0]}}</td>
-                <td style="color:#bc13fe; font-weight:bold;">{{row[1]}}</td>
-                <td><pre>{{row[2]}}</pre></td>
-                <td class="date">{{row[3]}}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </body></html>
-    """
-    return render_template_string(html, rows=rows)
+    content = request.json
+    if content:
+        data_store.append(content)
+        return jsonify({"status": "success"}), 200
+    return jsonify({"status": "error"}), 400
 
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=5000)
